@@ -1,0 +1,22 @@
+# CD de la branche Dev
+name: Continuous Devivery - Dev
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12 
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "groupe1-dev"
+          heroku_email: "gatien.boquet@gmail.com"
+          healthcheck: "https://groupe1-dev.herokuapp.com"
+          usedocker: true
+          dontuseforce: 0
