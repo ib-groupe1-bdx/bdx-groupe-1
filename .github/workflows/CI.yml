@@ -35,7 +35,7 @@ jobs:
 
     # Installation des dépendances   
     - name: Install dependencies
-      run: npm install
+      run: npm ci || npm install
 
     # Lancement du serveur node  
     - name: Launch node
@@ -118,4 +118,21 @@ jobs:
         context: .
         push: true
         tags: ghcr.io/${{ github.repository }}:latest
+
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    steps:
+    - uses: edge/simple-slack-notify@master
+      with:
+        status: ${{ job.status }}
+        success_text: '${env.GITHUB_WORKFLOW} (${env.GITHUB_RUN_NUMBER}) build completed successfully'
+        failure_text: '${env.GITHUB_WORKFLOW} (${env.GITHUB_RUN_NUMBER}) build failed'
+        cancelled_text: '${env.GITHUB_WORKFLOW} (${env.GITHUB_RUN_NUMBER}) build was cancelled'
+        fields: |
+          [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
+          { "title": "Branch", "value": "${env.GITHUB_REF_NAME}", "short": true }]
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
