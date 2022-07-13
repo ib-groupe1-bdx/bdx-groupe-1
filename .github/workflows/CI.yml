@@ -4,7 +4,7 @@ on:
   # Cette action ne se lance que sur un push sur la branche marquée
   push:
     branches:
-      - main
+      - LmataraKarim
   # Cette action ne se lance que sur un pull request vers la branche marquée
   pull_request:
     branches:
