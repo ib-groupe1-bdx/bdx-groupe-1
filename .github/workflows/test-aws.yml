@@ -1,4 +1,4 @@
-name: CI/CD counter app
+name: test-aws
 
 on:
   push:
