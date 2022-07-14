@@ -2,6 +2,9 @@ name: test-aws
 
 on:
   push:
+   branches:
+      - KarimLamtara
+    
 jobs:
 
   Deploy:
