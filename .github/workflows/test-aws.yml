@@ -24,3 +24,5 @@ jobs:
           
             docker pull ghcr.io/ib-groupe1-bdx/bdx-groupe-1:latest
             docker run -d -p 3001:3000 ghcr.io/ib-groupe1-bdx/bdx-groupe-1:latest
+            '
+            
