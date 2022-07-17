@@ -1,5 +1,5 @@
-# CD de la branche Dev
-name: Continuous Delivery - Dev
+
+name: Continuous Delivery
 
 on:
   workflow_run:
@@ -8,7 +8,7 @@ on:
       - completed
 
 jobs:
-  deploy:
+  deploy_Env_Dev:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,10 +21,83 @@ jobs:
           usedocker: true
           dontuseforce: 0
 
-  slackNotification:
+
+  deploy_Env_Stagging:
+    runs-on: ubuntu-latest
+    needs: [deploy_Env_Dev]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2 
+
+      - name: Deploy in EC2 
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME_STG  }}
+            USER_NAME : ${{ secrets.USER_NAME  }}
+            
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            
+            docker rm -f app_ib_groupe1_bdx
+            echo "${{ secrets.TOKEN_REPO }}" | docker login ghcr.io -u $ --password-stdin
+            docker pull ghcr.io/ib-groupe1-bdx/bdx-groupe-1:latest
+            docker run -d -p 80:3000 --name app_ib_groupe1_bdx ghcr.io/ib-groupe1-bdx/bdx-groupe-1:latest
+          '
+
+
+  test_Env_Stagging:
+    runs-on: ubuntu-latest
+    needs: [deploy_Env_Stagging]
+    env:
+            HOSTNAME : ${{ secrets.HOSTNAME_STG  }}
+
+    steps:
+      - name: Checkout Env
+        run: curl http://$HOSTNAME | grep -i "contact@eazytraining.fr"
+
+
+  deploy_Env_Production:
+    runs-on: ubuntu-latest
+    needs: [test_Env_Stagging]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2 
+
+      - name: Deploy in EC2 
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME_PROD  }}
+            USER_NAME : ${{ secrets.USER_NAME  }}
+            
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            
+            docker rm -f app_ib_groupe1_bdx
+            echo "${{ secrets.TOKEN_REPO }}" | docker login ghcr.io -u $ --password-stdin
+            docker pull ghcr.io/ib-groupe1-bdx/bdx-groupe-1:latest
+            docker run -d -p 80:3000 --name app_ib_groupe1_bdx ghcr.io/ib-groupe1-bdx/bdx-groupe-1:latest
+          '
+
+
+  test_Env_Production:
+    runs-on: ubuntu-latest
+    needs: [deploy_Env_Production]
+    env:
+            HOSTNAME : ${{ secrets.HOSTNAME_PROD  }}
+
+    steps:
+      - name: Checkout Env
+        run: curl http://$HOSTNAME | grep -i "contact@eazytraining.fr"
+
+
+  slack_Notification:
     name: Slack Notification
     runs-on: ubuntu-latest
-    needs: [deploy]
+    needs: [test_Env_Production]
     steps:
     - uses: edge/simple-slack-notify@master
       with:
