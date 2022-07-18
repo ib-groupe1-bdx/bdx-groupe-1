@@ -71,13 +71,15 @@ Si la pull request est mergé, la pipepine staging s'enclenche.
 - On récupère le package sur le repo github 
 - On le deploy sur heroku
 - On fait un healthcheck pour s'assurer du bon fonctionnement
-- On envoie une notification sur Slack
 
 ### 🌠 La pipeline CD : Staging et Prod
 
-- On upload sur un EC2 AWS
+- On upload sur un EC2 AWS avec le packages GitHub
 - On réalise un healthcheck pour vérifier le bon fonctionnement du déploiement
-- On monitor avec CloudWatch sur AWS 
+
+  Puis lors du passage en production :
+- On envoie une notification sur Slack
+- On monitor avec CloudWatch sur AWS  
 
 
 ## 🔬 Installation pipeline
