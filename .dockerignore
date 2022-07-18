@@ -3,3 +3,4 @@ npm-debug.log
 README.MD
 user-data.sh
 Dockerfile
+.github/*
