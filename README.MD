@@ -200,9 +200,10 @@ Ces variables sont confidentielles, assurez-vous de ne pas les divulguer publiqu
 
 `HOSTNAME_PROD` : Le nom d'hote du serveur EC2 d'AWS pour la Prod
 
-`HOST_NAME_STG` : Le nom d'hote du serveur EC2 d'AWS pour le staging
+`HOSTNAME_STG` : Le nom d'hote du serveur EC2 d'AWS pour le staging
 
 `USER_NAME`: L'username du serveur EC2 d'AWS
+
 ## 📚 Leçons apprises
 
 Github Actions ne faisait pas partie du cursus de notre formation; nous avons pu découvrir les fonctionnalités que github proposent et approfondir nos connaissances de création de pipeline cicd dans une technologie nouvelle.
